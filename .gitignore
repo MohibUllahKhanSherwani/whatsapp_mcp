@@ -24,3 +24,4 @@ graphify-out/
 .DS_Store
 Thumbs.db
 docs/
+examples/adk_sessions.db
