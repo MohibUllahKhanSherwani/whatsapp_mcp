@@ -82,6 +82,7 @@ async def chat_once(
 
     content = Content(role="user", parts=[Part(text=message)])
     final_text = None
+    tool_output = None
 
     for event in runner.run(
         user_id=user_id,
@@ -94,6 +95,12 @@ async def chat_once(
                 text = getattr(part, "text", None)
                 if text and not getattr(part, "thought", False):
                     final_text = text
+                function_response = getattr(part, "function_response", None)
+                if function_response is not None:
+                    tool_output = str(function_response)
+
+    if tool_output:
+        return f"Tool output: {tool_output}"
 
     if not final_text:
         final_text = "No text response returned by model (tool call likely executed)."
@@ -103,6 +110,17 @@ async def chat_once(
 
 
 if __name__ == "__main__":
-    prompt = "Use tool send message to send a message to +92234567890 The message is hello."
+    phone = os.getenv("WHATSAPP_RECIPIENT_NUMBER")
+    outgoing_message = os.getenv("WHATSAPP_DEFAULT_MESSAGE", "hello")
+    if not phone:
+        raise ValueError("Set WHATSAPP_RECIPIENT_NUMBER in .env")
+    if os.getenv("BYPASS_LLM", "1") == "1":
+        result = asyncio.run(mcp_send_text(phone, outgoing_message))
+        print(result)
+        raise SystemExit(0)
+    prompt = (
+        f"Use tool send message to send a message to {phone} "
+        f"The message is {outgoing_message}."
+    )
     result = asyncio.run(chat_once(prompt))
     print(result)
