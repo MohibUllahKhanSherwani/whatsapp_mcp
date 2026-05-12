@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 import asyncio
 import os
+import uuid
 from pathlib import Path
 from examples.mcp_bridge import mcp_health_check, mcp_send_text
 from dotenv import load_dotenv
@@ -11,7 +10,6 @@ from google.adk.runners import Runner
 from google.adk.sessions.database_session_service import DatabaseSessionService
 from google.genai.types import Content, Part
 
-from examples.mcp_bridge import mcp_health_check, mcp_send_text
 
 load_dotenv()
 
@@ -21,6 +19,9 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 if GOOGLE_API_KEY:
     os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
+
+DEFAULT_RECIPIENT_NUMBER = "+923315467120"
+DEFAULT_OUTGOING_MESSAGE = "Hello from the ADK WhatsApp MCP example."
 
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "adk_sessions.db"
@@ -67,8 +68,8 @@ def initialize_runner(agent: LlmAgent) -> Runner:
 
 async def chat_once(
     message: str,
-    user_id: str = "local-user",
-    session_id: str = "local-session",
+    user_id: str,
+    session_id: str,
 ) -> str:
     agent = initialize_agent()
     runner = initialize_runner(agent)
@@ -108,19 +109,15 @@ async def chat_once(
     return final_text
 
 
+def main() -> None:
+    user_id = str(uuid.uuid4())
+    session_id = str(uuid.uuid4())
+    prompt = (
+        f"Use tool send message to send a message to {DEFAULT_RECIPIENT_NUMBER}. "
+        f"The message is {DEFAULT_OUTGOING_MESSAGE}."
+    )
+    result = asyncio.run(chat_once(prompt, user_id=user_id, session_id=session_id))
+    print(result)
 
 if __name__ == "__main__":
-    phone = os.getenv("WHATSAPP_RECIPIENT_NUMBER")
-    outgoing_message = os.getenv("WHATSAPP_DEFAULT_MESSAGE", "hello")
-    if not phone:
-        raise ValueError("Set WHATSAPP_RECIPIENT_NUMBER in .env")
-    if os.getenv("BYPASS_LLM", "1") == "1":
-        result = asyncio.run(mcp_send_text(phone, outgoing_message))
-        print(result)
-        raise SystemExit(0)
-    prompt = (
-        f"Use tool send message to send a message to {phone} "
-        f"The message is {outgoing_message}."
-    )
-    result = asyncio.run(chat_once(prompt))
-    print(result)
+    main()
