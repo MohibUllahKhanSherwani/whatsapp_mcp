@@ -4,11 +4,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    WHATSAPP_WEB_BRIDGE_URL: str = "http://127.0.0.1:8080"
 
-    WHATSAPP_TOKEN: str
-    WHATSAPP_PHONE_NUMBER_ID: str
-    WHATSAPP_VERIFY_TOKEN: str
-    DATABASE_URL: str
+    DATABASE_URL: str | None = None
 
     model_config = SettingsConfigDict(
         env_file=".env",
