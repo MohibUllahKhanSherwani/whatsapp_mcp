@@ -109,6 +109,29 @@ ADK example:
 python -m examples.adk_agent
 ```
 
+## CI/CD
+
+GitHub Actions workflows are included:
+
+- `CI` (`.github/workflows/ci.yml`)
+  - Runs on pushes to `main` and all pull requests
+  - Python: install + tests + package build validation
+  - Go bridge: `gofmt` check + `go build` + `go test`
+  - Docker: builds both MCP image and bridge image
+
+- `CD` (`.github/workflows/cd.yml`)
+  - Runs on tag pushes matching `v*` (example: `v0.1.0`) or manually
+  - Publishes images to GHCR:
+    - `ghcr.io/<owner>/<repo>`
+    - `ghcr.io/<owner>/<repo>-bridge`
+
+To release:
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+```
+
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
