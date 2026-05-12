@@ -25,3 +25,10 @@ graphify-out/
 Thumbs.db
 docs/
 examples/adk_sessions.db
+
+# Local WhatsApp bridge runtime state
+whatsapp-bridge/store/
+whatsapp-bridge/*.db
+whatsapp-bridge/*.sqlite
+whatsapp-bridge/*.sqlite3
+whatsapp-bridge/whatsapp-bridge.exe
