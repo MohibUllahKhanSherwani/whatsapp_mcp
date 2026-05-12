@@ -112,9 +112,11 @@ async def chat_once(
 def main() -> None:
     user_id = str(uuid.uuid4())
     session_id = str(uuid.uuid4())
+    print(f"Using user_id: {user_id} and session_id: {session_id}")
+    message = 'Hello from mohib, using google adk'
     prompt = (
-        f"Use tool send message to send a message to {DEFAULT_RECIPIENT_NUMBER}. "
-        f"The message is {DEFAULT_OUTGOING_MESSAGE}."
+    f'Call mcp_send_text with phone_number "+923315467120" '
+    f'and message "{message}".'
     )
     result = asyncio.run(chat_once(prompt, user_id=user_id, session_id=session_id))
     print(result)

@@ -1,4 +1,5 @@
 from fastmcp import FastMCP
+
 from whatsapp_mcp.settings import get_settings
 from whatsapp_mcp.whatsapp.client import send_whatsapp_message
 
@@ -9,8 +10,7 @@ mcp = FastMCP("whatsapp_mcp")
 def whatsapp_send_message(phone_number: str, message: str) -> str:
     settings = get_settings()
     result = send_whatsapp_message(
-        token=settings.WHATSAPP_TOKEN,
-        phone_number_id=settings.WHATSAPP_PHONE_NUMBER_ID,
+        settings=settings,
         to=phone_number,
         message=message,
     )
@@ -19,4 +19,8 @@ def whatsapp_send_message(phone_number: str, message: str) -> str:
 
 @mcp.tool
 def health_check() -> dict:
-    return {"status": "OK", "message": "WhatsApp MCP is running."}
+    return {
+        "status": "OK",
+        "message": "WhatsApp MCP is running.",
+        "provider": "web_local",
+    }
